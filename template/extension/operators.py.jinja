@@ -1,0 +1,19 @@
+import bpy
+
+from {{ package_slug }}.version import __version__
+
+from .preferences import get_preferences
+
+
+class {{ package_slug|upper }}_OT_hello(bpy.types.Operator):
+    """Say hello, as an example of an operator."""
+
+    bl_idname = "{{ package_slug }}.hello"
+    bl_label = "Hello"
+
+    def execute(self, context):
+        """Report the greeting of the preferences and the version of the package."""
+        preferences = get_preferences(context)
+        greeting = preferences.greeting if preferences is not None else "Hello"
+        self.report({"INFO"}, f"{greeting} from {{ project_name }} {__version__}")
+        return {"FINISHED"}

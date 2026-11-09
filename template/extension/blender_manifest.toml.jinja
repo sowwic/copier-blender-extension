@@ -1,0 +1,20 @@
+schema_version = "1.0.0"
+
+id = "{{ package_slug }}"
+version = "{{ initial_version }}"
+name = "{{ project_name }}"
+tagline = "Description"
+maintainer = "{{ author }} <{{ author_email }}>"
+type = "add-on"
+website = "https://github.com/{{ github_user }}/{{ project_slug }}"
+tags = ["Development"]
+
+blender_version_min = "4.2.0"
+license = ["SPDX:MIT"]
+
+# The wheels are added by `scripts/build_extension.py`.
+
+# Permissions the extension needs, with the reason shown to the user:
+# [permissions]
+# network = "Why the network is used"
+# files = "Why files are read or written"

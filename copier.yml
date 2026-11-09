@@ -1,0 +1,93 @@
+# Copier template: Blender extension (add-on zip with bundled wheels, bpy tests)
+# Use: copier copy --trust gh:sowwic/copier-blender-extension path/to/new-project
+# Update an existing project: copier update --trust   (needs a clean git tree)
+_subdirectory: template
+_min_copier_version: "9.4.0"
+
+# Tasks only run with --trust:
+#  - fetch the shared makefile modules into .make/ (sowwic/makefiles), so they can be committed
+#  - `uv lock` makes the lockfile CI needs (`uv sync --locked`); skipped when uv is missing
+_tasks:
+  - "make help >/dev/null 2>&1 || echo 'Could not fetch .make/*.mk from sowwic/makefiles, make fetches them on the first run.'"
+  - "command -v uv >/dev/null 2>&1 && uv lock || true"
+
+project_name:
+  type: str
+  help: Project name (human readable, used in titles, docs and the app name)
+  default: My Project
+
+project_slug:
+  type: str
+  help: Project slug (repo/directory name and distribution name on PyPI)
+  default: "{{ project_name.lower().replace(' ', '-') }}"
+  validator: >-
+    {% if not (project_slug | regex_search('^[a-z0-9][a-z0-9._-]*$')) %}
+    must be lowercase letters, digits, '.', '_' or '-'
+    {% endif %}
+
+package_name:
+  type: str
+  help: Python package name (the importable module under src/)
+  default: my_package
+
+package_slug:
+  type: str
+  help: Package slug (normalized import name, must be a valid identifier)
+  default: "{{ package_name.lower().replace(' ', '_') }}"
+  validator: >-
+    {% if not package_slug.isidentifier() %}
+    is not a valid Python identifier
+    {% endif %}
+
+initial_version:
+  type: str
+  help: Initial version (written to VERSION, pyproject.toml and CHANGELOG.rst)
+  default: 1.0.0
+
+python_version:
+  type: str
+  help: Python version (the bpy package the tests use, Blender 5.1/5.2, needs exactly 3.13)
+  default: "3.13"
+  validator: >-
+    {% if python_version != '3.13' %}
+    the bpy test package needs Python 3.13
+    {% endif %}
+
+author:
+  type: str
+  help: Author name (pyproject.toml, LICENSE, docs)
+  default: Dima Shevchenko
+
+author_email:
+  type: str
+  help: Author email (pyproject.toml)
+  default: 47799401+sowwic@users.noreply.github.com
+
+github_user:
+  type: str
+  help: GitHub user or organization (README badges and links)
+  default: sowwic
+
+github_workflow:
+  type: bool
+  help: Include GitHub Actions workflows (tests, lint, docs, release) from sowwic/gh-workflows?
+  default: true
+
+release_branch:
+  type: str
+  help: Release branch (CI, docs deploy and `make release` use it)
+  default: main
+
+develop_branch:
+  type: str
+  help: Development branch (CI and `make release` back-merge target)
+  default: develop
+
+ide:
+  type: str
+  help: Which editor/IDE should get project config (debugger, env file)?
+  default: nvim
+  choices:
+    "Neovim: .nvim.lua with nvim-dap (debugpy) configurations": nvim
+    "VS Code: .vscode/ settings": vscode
+    "None: no editor-specific files": none

@@ -1,0 +1,32 @@
+import bpy
+
+
+class {{ package_slug|upper }}_AP_preferences(bpy.types.AddonPreferences):
+    """Preferences of the extension, in Edit > Preferences > Add-ons."""
+
+    bl_idname = __package__
+
+    greeting: bpy.props.StringProperty(
+        name="Greeting",
+        description="What the Hello operator says",
+        default="Hello",
+    )
+
+    def draw(self, context):
+        """Draw the settings."""
+        self.layout.prop(self, "greeting")
+
+
+def get_preferences(context=None):
+    """Get the preferences of the extension.
+
+    Args:
+        context (bpy.types.Context | None): context, the current one if omitted.
+
+    Returns:
+        {{ package_slug|upper }}_AP_preferences | None: preferences, None while
+            the extension is not enabled as an add-on (e.g. in tests).
+    """
+    context = context or bpy.context
+    addon = context.preferences.addons.get(__package__)
+    return addon.preferences if addon is not None else None

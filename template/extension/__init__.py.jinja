@@ -1,0 +1,23 @@
+"""{{ project_name }}: a Blender extension."""
+
+import bpy
+
+from . import operators, panel, preferences
+
+CLASSES = (
+    preferences.{{ package_slug|upper }}_AP_preferences,
+    operators.{{ package_slug|upper }}_OT_hello,
+    panel.{{ package_slug|upper }}_PT_main,
+)
+
+
+def register():
+    """Add the operators, the panel and the preferences."""
+    for cls in CLASSES:
+        bpy.utils.register_class(cls)
+
+
+def unregister():
+    """Remove what was added."""
+    for cls in reversed(CLASSES):
+        bpy.utils.unregister_class(cls)

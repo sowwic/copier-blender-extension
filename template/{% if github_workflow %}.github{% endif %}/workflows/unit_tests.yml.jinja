@@ -1,0 +1,21 @@
+name: Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [{{ release_branch }}, {{ develop_branch }}]
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    uses: sowwic/gh-workflows/.github/workflows/python-tests.yml@v1
+    with:
+      python-versions: '["{{ python_version }}"]'
+      macos-python-versions: '["{{ python_version }}"]'
+      # The tests need Blender and run with the bpy package, which needs Python 3.13 and
+      # has no wheels for Intel Macs or Linux on ARM.
+      os: '["ubuntu-latest"]'
+      # Libraries Blender loads, a plain Linux runner lacks them.
+      apt-packages: libegl1 libgl1 libsm6 libxfixes3 libxi6 libxrender1 libxxf86vm1
+      test-command: uv run --group bpy pytest tests

@@ -1,0 +1,49 @@
+# {{ project_name }}
+
+![Tests](https://github.com/{{ github_user }}/{{ project_slug }}/actions/workflows/unit_tests.yml/badge.svg)
+![Code Quality](https://github.com/{{ github_user }}/{{ project_slug }}/actions/workflows/code_quality.yml/badge.svg)
+
+Description
+
+## Development
+
+```sh
+uv sync            # install the project and dev dependencies
+make check         # lint + tests
+make help          # list all targets
+```
+
+### Blender
+
+The project is a Blender **extension** (Blender 4.2 or newer): `extension/` holds the
+manifest and the add-on, which `make extension` builds into
+`dist/{{ package_slug }}-<version>.zip` together with the wheels of this package
+and its dependencies, since Blender never downloads anything. Dependencies must be pure
+Python, or need one build per platform.
+
+```sh
+make install       # build the zip and install it in Blender, enabled
+make uninstall     # disable and remove it
+make validate      # check the manifest
+```
+
+These need `BLENDER` (path of the Blender executable) in a `.env` file (git-ignored) in
+the project root, or in `~/.config/blender-ci.env`:
+
+```sh
+BLENDER=/Applications/Blender.app/Contents/MacOS/Blender
+```
+
+Without make, install the zip in Blender with Edit > Preferences > Get Extensions >
+the arrow menu (top right) > Install from Disk. Add the permissions the extension needs
+(network, files) to `extension/blender_manifest.toml`.
+
+The tests run with the [`bpy`](https://pypi.org/project/bpy/) package, Blender as a
+Python module, so no Blender install is needed (`make pytest`, a 250 MB download the
+first time). `bpy` 5.2 needs Python 3.13, see `.python-version`. A plain `pytest`
+without `bpy` skips the tests that need Blender.
+
+## Releasing
+
+1. Add a `v<version>` entry to `CHANGELOG.rst`, update `VERSION` (`make update-version`) and commit on `{{ release_branch }}`.
+2. `make release VERSION=<version>` tags, pushes (triggering the GitHub release workflow) and back-merges into `{{ develop_branch }}`.

@@ -1,0 +1,71 @@
+[project]
+name = "{{ project_slug }}"
+version = "{{ initial_version }}"
+description = "Description"
+authors = [
+    {name = "{{ author }}",email = "{{ author_email }}"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">={{ python_version }}"
+packages = [
+    {include = "{{ package_slug }}", from="src"},
+]
+dependencies = [
+]
+
+[build-system]
+requires = ["uv_build>=0.10.6"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "{{ package_slug }}"
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "mkdocs-autorefs",
+    "mkdocs-autoapi",
+    "ruff",
+    "debugpy",
+]
+# Blender as a Python module, to run the tests without a Blender installation
+# (`make pytest`). Each bpy release needs exactly one Python version, 3.13 for 5.1 and
+# 5.2, and has no wheel for Intel Macs or Linux on ARM.
+bpy = [
+    "bpy==5.2.3; python_full_version >= '3.13' and python_full_version < '3.14' and ((sys_platform == 'darwin' and platform_machine == 'arm64') or (sys_platform == 'linux' and platform_machine == 'x86_64') or sys_platform == 'win32')",
+]
+
+[tool.ruff]
+src = ["src"]
+exclude = ["**/resources_rc.py"]
+
+show-fixes = true
+line-length = 89
+lint.select = [
+    "E",
+    "F",
+    "UP",
+]
+lint.ignore = [
+    "D100",
+    "D104",
+    "D103",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov={{ package_slug }} --cov-report=term-missing"
+log_cli = true
+log_cli_level = "ERROR"
+
+[tool.ty.rules]
+unresolved-attribute="ignore"
+invalid-argument-type="ignore"
+invalid-assignment="ignore"
+invalid-return-type="ignore"
+invalid-method-override="ignore"
