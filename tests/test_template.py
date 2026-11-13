@@ -106,6 +106,20 @@ def test_github_workflows_are_optional(tmp_path):
     assert not any(name.startswith(".github") for name in files(without))
 
 
+def test_dependabot_follows_the_workflows_and_the_develop_branch(tmp_path):
+    with_ci = generate(tmp_path / "a", develop_branch="dev")
+    without = generate(tmp_path / "b", github_workflow=False)
+
+    config = yaml.safe_load((with_ci / ".github/dependabot.yml").read_text())
+
+    assert {u["package-ecosystem"] for u in config["updates"]} == {
+        "uv",
+        "github-actions",
+    }
+    assert {u["target-branch"] for u in config["updates"]} == {"dev"}
+    assert ".github/dependabot.yml" not in files(without)
+
+
 @pytest.mark.parametrize(
     "ide, present", [("nvim", ".nvim.lua"), ("vscode", ".vscode/settings.json")]
 )
