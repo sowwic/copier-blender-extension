@@ -9,7 +9,7 @@ PYTEST_PDB_CMD = uv run --group bpy pytest -vvv --pdb --log-cli-level=DEBUG test
 
 MAKEFILES_REF ?= v1
 MAKEFILES_URL ?= https://raw.githubusercontent.com/sowwic/makefiles/$(MAKEFILES_REF)
-MAKEFILES_MODULES = general/python dcc/blender
+MAKEFILES_MODULES = general/python general/repo dcc/blender
 
 .make/%.mk:
 	@mkdir -p $(dir $@)

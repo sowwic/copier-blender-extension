@@ -190,7 +190,7 @@ def test_blender_makefile_includes_the_blender_module_and_runs_bpy(tmp_path):
     project = generate(tmp_path)
     makefile = (project / "Makefile").read_text()
 
-    assert makefile_modules(project) == ["general/python", "dcc/blender"]
+    assert makefile_modules(project) == ["general/python", "general/repo", "dcc/blender"]
     assert "PYTEST_CMD = uv run --group bpy pytest tests\n" in makefile
     assert "LINT_PATHS = src tests extension scripts\n" in makefile
 
