@@ -46,12 +46,8 @@ initial_version:
 
 python_version:
   type: str
-  help: Python version (the bpy package the tests use, Blender 5.1/5.2, needs exactly 3.13)
+  help: Python version (requires-python and .python-version; Blender 5.1/5.2 and its bpy test package use 3.13, change it for an older or newer Blender)
   default: "3.13"
-  validator: >-
-    {% if python_version != '3.13' %}
-    the bpy test package needs Python 3.13
-    {% endif %}
 
 author:
   type: str

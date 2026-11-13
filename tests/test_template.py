@@ -213,9 +213,13 @@ def test_the_ci_workflow_runs_the_bpy_tests(tmp_path):
     assert "uv run --group bpy pytest tests" in workflow
 
 
-def test_only_python_313_is_accepted(tmp_path):
-    with pytest.raises(ValueError):
-        generate(tmp_path, python_version="3.12")
+def test_the_python_version_defaults_to_313_and_can_be_changed(tmp_path):
+    default = generate(tmp_path / "a")
+    other = generate(tmp_path / "b", python_version="3.11")
+
+    assert (default / ".python-version").read_text().strip() == "3.13"
+    assert (other / ".python-version").read_text().strip() == "3.11"
+    assert 'requires-python = ">=3.11"' in (other / "pyproject.toml").read_text()
 
 
 def test_no_maya_files_and_no_qt(tmp_path):

@@ -16,7 +16,7 @@ Without it the project is generated and you run `uv lock` yourself.
 - `extension/`: manifest, `register()`/`unregister()`, and an example operator, panel and preferences.
 - `scripts/build_extension.py`: builds the zip with the wheels of the package and its locked, pure Python dependencies, since Blender never downloads anything.
 - `make extension`, `make validate`, `make install`, `make uninstall`: build, check and install the zip through Blender, using `BLENDER` from `.env` (or `~/.config/blender-ci.env`).
-- `make pytest` runs the tests with the `bpy` package from PyPI (no Blender install needed, Python 3.13), tests that need Blender are skipped without it.
+- `make pytest` runs the tests with the `bpy` package from PyPI (no Blender install needed, Python 3.13 by default), tests that need Blender are skipped without it.
 - CI that runs the `bpy` tests on Ubuntu and macOS, ruff, mkdocs, release workflow.
 
 ## Makefile
@@ -35,7 +35,7 @@ steps to a shared one with a double-colon rule (`check::`); the variables a modu
 | `project_name`, `project_slug` | Human readable name, and the repo/distribution name |
 | `package_name`, `package_slug` | Importable package under `src/` (the slug must be a valid identifier) |
 | `initial_version` | Written to `VERSION`, `pyproject.toml` and `CHANGELOG.rst` |
-| `python_version` | Must be 3.13, which the `bpy` test package needs |
+| `python_version` | Python version of the project (`requires-python`, `.python-version`), 3.13 for Blender 5.1/5.2. Change it for an older or newer Blender, and then the `bpy` pin in `pyproject.toml` (see the comment there) |
 | `author`, `author_email`, `github_user` | `pyproject.toml`, `LICENSE`, README badges and links |
 | `github_workflow` | Include the GitHub Actions workflows from `sowwic/gh-workflows` |
 | `release_branch`, `develop_branch` | Used by CI, docs deploy and `make release` |
