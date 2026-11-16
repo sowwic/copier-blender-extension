@@ -1,0 +1,36 @@
+# Testing
+
+The tests run with the [`bpy`](https://pypi.org/project/bpy/) package, Blender as a
+Python module, so no Blender install is needed.
+
+```bash
+make pytest                                  # everything, with coverage
+uv run --group bpy pytest tests -k extension # a selection
+make pytest-pdb                              # verbose, pdb on failure
+```
+
+## Setting up
+
+`bpy` is a 250 MB download the first time. Each `bpy` release needs exactly one Python
+version: 5.2 needs **3.13** (see `.python-version`), and has no wheel for Intel Macs or
+Linux on ARM. It is in its own dependency group, `bpy`, which the make targets add.
+
+A plain `pytest` without `bpy` skips everything but `test_package.py` (see
+`pytest_collection_modifyitems` in `tests/conftest.py`), so lint and docs jobs need no
+Blender. `make validate` checks the manifest and does need a Blender (`BLENDER` in
+`.env`).
+
+## Layout
+
+| File | Covers |
+| --- | --- |
+| `tests/test_package.py` | The package imports (runs without `bpy`). |
+| `tests/test_extension.py` | The extension loaded from `extension/`: registering and its operators. |
+
+`tests/conftest.py` provides `output_dir`.
+
+## CI
+
+`.github/workflows/unit_tests.yml` calls the shared `python-tests` workflow on hosted
+runners with the libraries Blender loads, and runs `uv run --group bpy pytest tests`.
+Lint (`code_quality.yml`) needs no Blender: `make lint`.

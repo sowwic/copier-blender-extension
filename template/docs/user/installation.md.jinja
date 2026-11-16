@@ -1,0 +1,52 @@
+# Installation
+
+{{ project_name }} is installed as a **Blender extension**: a zip holding the add-on and
+the wheels of the Python packages it needs, so nothing is installed into Blender's own
+Python and nothing is downloaded when Blender installs it.
+
+## Requirements
+
+- Blender 4.2 or newer.
+- [uv](https://docs.astral.sh/uv/) and `make`, to build the extension from source.
+
+## 1. Tell the build where Blender is
+
+Create a `.env` file in the project root (or `~/.config/blender-ci.env`):
+
+```sh
+BLENDER=/Applications/Blender.app/Contents/MacOS/Blender
+```
+
+| Variable | Meaning |
+| --- | --- |
+| `BLENDER` | The Blender executable. Used to build the zip, validate the manifest and install. |
+
+The file is looked up in this order: `BLENDER_CI_ENV_FILE`, `./.env`,
+`~/.config/blender-ci.env`.
+
+## 2. Install
+
+```sh
+make install
+```
+
+| Target | What it does |
+| --- | --- |
+| `make extension` | Builds `dist/{{ package_slug }}-<version>.zip`: wheels of this package and of its locked dependencies plus the extension, packed by Blender. |
+| `make install` | Builds the zip, then installs it in the `user_default` repository and enables it. |
+| `make uninstall` | Disables and removes it. |
+| `make validate` | Checks `extension/blender_manifest.toml` with Blender. |
+
+### Without make
+
+Build the zip with `make extension`, then in Blender use **Edit > Preferences > Get
+Extensions**, the arrow menu (top right) and **Install from Disk**.
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| `Set BLENDER in ...` | The env file is missing or does not define `BLENDER`. |
+| `blender_manifest.toml is at version X, VERSION says Y` | Run `make update-version` and set the same version in the manifest. |
+| A dependency is not bundled | One zip serves every platform, so dependencies must be pure Python wheels. |
+| Old behavior after pulling changes | Run `make install` again. |

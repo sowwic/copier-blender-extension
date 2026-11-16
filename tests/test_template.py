@@ -241,3 +241,15 @@ def test_the_makefile_fetches_the_shared_modules(tmp_path):
     assert "MAKEFILES_REF ?= v1" in makefile
     assert ".make/%.mk:" in makefile
     assert "include $(MAKEFILES_MODULES:%=.make/%.mk)" in makefile
+
+
+def test_the_docs_pages_are_generated_and_linked_from_the_nav(tmp_path):
+    project = generate(tmp_path, project_name="Demo Ext", package_name="demo_ext")
+
+    check_well_formed(project)
+    nav = yaml.safe_load((project / "mkdocs.yml").read_text())["nav"]
+    linked = set(re.findall(r"\b[\w/]+\.md\b", str(nav)))
+    pages = {p for p in files(project) if p.startswith("docs/") and p.endswith(".md")}
+
+    assert linked == {p.removeprefix("docs/") for p in pages}
+    assert "Demo Ext" in (project / "docs/index.md").read_text()

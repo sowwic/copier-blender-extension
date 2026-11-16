@@ -1,0 +1,29 @@
+# Architecture
+
+```text
+src
+└── {{ package_slug }}
+    └── version.py   __version__
+extension
+├── __init__.py             register / unregister
+├── blender_manifest.toml   the extension manifest
+├── operators.py
+├── panel.py
+└── preferences.py
+scripts/build_extension.py  assembles and builds the zip
+```
+
+`src/{{ package_slug }}` is the Python package, importable outside Blender. `extension/`
+is the add-on Blender loads, and may import `bpy` freely.
+
+## The zip
+
+`scripts/build_extension.py` copies `extension/` into `build/extension/`, builds a wheel
+of the package and of every locked dependency (`uv export`) into its `wheels/` folder,
+writes the list into `blender_manifest.toml` (at the line `# The wheels are added by
+...`), and has Blender pack it (`blender --command extension build`). The dependencies
+must be pure Python, and the manifest version must equal `VERSION`, or the build stops.
+
+The targets come from [sowwic/makefiles](https://github.com/sowwic/makefiles)
+(`dcc/blender`), fetched into `.make/` and committed; `make update-make` fetches them
+again.

@@ -1,0 +1,28 @@
+# Developer Guide
+
+This guide is for people who work on {{ project_name }} itself.
+
+## Setup
+
+```bash
+uv sync
+make check        # ruff + pytest with bpy
+make mkdocs       # serve these docs
+```
+
+`make help` lists every target. Ruff uses a line length of 89 and the `E`, `F` and `UP`
+rules. Docstrings are Google style: the API reference is generated from them.
+
+!!! important
+    `import {{ package_slug }}` must work **outside Blender** (docs, tooling), so `bpy`
+    is imported inside the functions that use it. Only the modules of `extension/` import
+    `bpy` at the top, since Blender is the only one loading them.
+
+## Pages
+
+| Page | What you learn |
+| --- | --- |
+| [Architecture](architecture.md) | The package, the extension and the zip. |
+| [Testing](testing.md) | The `bpy` package, the test layout and CI. |
+| [Releasing](releasing.md) | Versions, the changelog and `make release`. |
+| API reference | Generated from the docstrings (see the navigation). |

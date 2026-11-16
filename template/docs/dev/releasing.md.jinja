@@ -1,0 +1,31 @@
+# Releasing
+
+## Branches and versions
+
+`{{ develop_branch }}` is the default and PR branch; `{{ release_branch }}` is the
+release branch. Work on a feature branch named after the GitHub issue.
+
+The version lives in `VERSION`. `make update-version` copies it into `pyproject.toml`;
+`extension/blender_manifest.toml` has its own `version` that must be kept equal, or
+`make extension` stops. Add a `v<version>` section at the top of `CHANGELOG.rst`, one
+bullet per user-visible change with the issue number where there is one.
+
+## Release
+
+1. Update `CHANGELOG.rst`, `VERSION` (`make update-version`) and the manifest version,
+   commit on `{{ release_branch }}`.
+2. Run
+
+   ```bash
+   make release VERSION=1.2.3 [RELEASE_TITLE="..."]
+   ```
+
+It tags `{{ release_branch }}`, pushes and merges back into `{{ develop_branch }}`. The
+tag triggers `.github/workflows/release.yml`, which creates the GitHub release from the
+changelog section.
+
+## CI
+
+Workflows in `.github/workflows/` are thin callers of the shared ones in
+`sowwic/gh-workflows`: tests (see [Testing](testing.md#ci)), lint, docs deployment to
+GitHub Pages and the release. Dependabot opens update PRs against `{{ develop_branch }}`.
